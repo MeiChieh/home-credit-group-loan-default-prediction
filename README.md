@@ -94,15 +94,15 @@ LGBM + Balanced RandomForest Model is deployed to GCP, try it out on the `predic
 ---
 
 Notebooks: 
-- [1_app_df_cleaning](https://github.com/TuringCollegeSubmissions/mchien-ML.4.1/blob/master/1_clean_app_df.ipynb)
-- [2_supporting_df_cleaning](https://github.com/TuringCollegeSubmissions/mchien-ML.4.1/blob/master/2_clean_supporting_dfs.ipynb)
-- [3_join_and_aggregate_tables](https://github.com/TuringCollegeSubmissions/mchien-ML.4.1/blob/master/3_join_and_agg_dfs.ipynb)
-- [4_eda](https://github.com/TuringCollegeSubmissions/mchien-ML.4.1/blob/master/4_eda.ipynb)
-- [5_modeling](https://github.com/TuringCollegeSubmissions/mchien-ML.4.1/blob/master/5_modeling.ipynb)
+- [1_app_df_cleaning](https://github.com/MeiChieh/home-credit-group-loan-default-prediction/blob/main/1_clean_app_df.ipynb)
+- [2_supporting_df_cleaning](https://github.com/MeiChieh/home-credit-group-loan-default-prediction/blob/main/2_clean_supporting_dfs.ipynb)
+- [3_join_and_aggregate_tables](https://github.com/MeiChieh/home-credit-group-loan-default-prediction/blob/main/3_join_and_agg_dfs.ipynb)
+- [4_eda](https://github.com/MeiChieh/home-credit-group-loan-default-prediction/blob/main/4_eda.ipynb)
+- [5_modeling](https://github.com/MeiChieh/home-credit-group-loan-default-prediction/blob/main/5_modeling.ipynb)
 
 Deployment Folder:
-- [model deployment](https://github.com/TuringCollegeSubmissions/mchien-ML.4.1/tree/master/loan_default_prediction_app)
+- [model deployment](https://github.com/MeiChieh/home-credit-group-loan-default-prediction/tree/main/loan_default_prediction_app)
 
 Test cloud deployment:
-- [prediction demo file](https://github.com/TuringCollegeSubmissions/mchien-ML.4.1/blob/master/prediction_demo.ipynb)
+- [prediction demo file](https://github.com/MeiChieh/home-credit-group-loan-default-prediction/blob/main/prediction_demo.ipynb)
 
