@@ -1,43 +1,32 @@
-## Home Credit Default Risk Prediction Business Report
+# Home Credit Default Risk Prediction Business Report
 (This readme file is intended to be a business report for Home Credit Group)
 
-#### Overview
+## Overview
 Home Credit is an international non-bank financial institution specializing in installment lending, primarily to individuals with little or no credit history. Instead of relying on credit history, Home Credit assesses loan applications using data such as basic applicant information, sociogeographical details, and the completeness of the loan application.
 
 In this project, we have access to both loan application data and the applicants' past loan histories and bureau credit histories. Our objective is to develop models that predict whether a client will default on a current loan. Additionally, we will explore if models that incorporate historical and application data perform better than those using only application data.
 
 Ultimately, we will recommend the most suitable model, supported by sound reasoning to our potential clients. This model will also be deployed to Google Cloud Platform (GCP) for further use.
 
-#### Data Processing
+## Data Processing
 
 Given the diverse data sources, it is essential to integrate and extract information from them for comprehensive analysis.
 
-##### Data Processing Steps
 1. Aggregate the previous loan records tables (installment, POS cash, credit card) by previous_loan_id and generate new features.
 2. Join these tables with the previous_loan_application table.
 3. Aggregate the current loan data by current_loan_id and pivot on different loan types (cash, consumer, revolving) to create the all_historical_feats table.
 4. Aggregate and join the bureau and bureau_balance tables.
 Join the aggregated bureau table with the application table on current_loan_id.
-5. Join the application_bureau table with the all_historical_feats table to create app_full table which includes all features.
-6. Feature selection with model.
+1. Join the application_bureau table with the all_historical_feats table to create app_full table which includes all features.
+2. Feature selection with model.
 
 
-##### Processing diagram
 <img src="images/risk_evaluation_planner.png" width="600" />
 
-#### Data Overview
-<div>
-<img src="images/pie.png" width="300" />
-<img src="images/selected_feats_bar.png" width="300" />
-</div>
 
-- The data is highly imbalanced, suitable balancing strategy should be applied.
+## Results
 
-#### Models and metrics
-
-##### 5 Candidate models and balance strategy:
-
-Compared with Base Model, LGBM trained only on application data.
+Since the target (loan_default) is highly imbalanced, different balancing strategies are applied to the models.
 
 - LGBM (class_weight)
 - LGBM + Balanced RandomForest
@@ -51,43 +40,52 @@ Compared with Base Model, LGBM trained only on application data.
 <br/>
 <br/>
 
-> LGBM and LGBM + Balanced RandomForest are the most performant models.
-- __LGBM__: Both the recall of positive and negative classes are slightly better than Base model.
-- __LGBM + Balanced RandomForest__: recall of positive class is 6% worse than Base model, but the recall for negative class is 8% better than the base model.
+> `LGBM` and `LGBM + Balanced RandomForest` are the most performant models.
 
-##### Feature Importance
+| Model                   | ROC AUC | Accuracy | Recall | Precision |
+|-------------------------|---------|----------|--------|-----------|
+| Base Model              | 0.75    | 0.713    | 0.690  | 0.170     |
+| LGBM (class_weight)     | 0.77    | 0.725    | 0.698  | 0.179     |
+| LGBM + Balanced RF      | 0.77    | 0.750    | 0.645  | 0.194     |
+
+> `LGBM + Balanced RandomForest` is more balanced than `LGBM` in terms of recall and precision.
+
+### Comparing the Two Most Performant Models: LGBM and LGBM + Balanced RandomForest
+
+#### Feature Importance Comparison
 <img src="images/feature_imp.png" width="1000" />
 
-> In the LGBM + Balanced RandomForest model, application related features have higher importance, while in LGBM, the importance of application and historical features are more balanced.
+> In the LGBM + Balanced RandomForest model, `application` related features have higher importance, while in LGBM, the importance of application and historical features are more balanced.
 
-##### Error Analysis
-Both models have their own strength, what are the trade-offs preferring one over another ? Let's look at the prediction error (FP, FN) on one feature that impacts the financial institution/ banks most directly: `Loan amount credit`.
+#### Trade-offs Analysis
+To better understand the trade-offs between these models, let's analyze their prediction errors (False Positives and False Negatives) focusing on `Loan amount credit` - a key metric that directly affects financial institutions' bottom line.
 
 <img src="images/error_analysis2.png" width="600" />
 <img src="images/error_df2.png" width="600" />
 
 
-False_Positive
-- LGBM is more strict in identifying positive class, the median and mean of LGBM is 20,000 higher than the LGBM + Balanced RandomForest model. It has higher chance to falsely predict default on people who apply for bigger loans.
+__False Positive Analysis__
+- The LGBM model demonstrates higher stringency in positive class identification, with its median and mean values exceeding those of the LGBM + Balanced RandomForest model by approximately 20,000 units. This indicates an increased tendency to incorrectly classify larger loan applications as defaults.
 
-> This is not ideal for our use case, since banks can earn more interest from bigger loans, they would earn less if more of the bigger loans are rejected.
+> This characteristic presents a suboptimal outcome for financial institutions, as it potentially reduces revenue opportunities from higher-value loans that typically generate greater interest income.
 
-False_Negative
-- The mean and median of both models are very similar for the loans that are falsely predicted as default.
+__False Negative Analysis__
+- Both models exhibit comparable mean and median values for loans incorrectly classified as non-defaults, suggesting similar performance in this aspect.
 
-> Despite of being more tolerant, LGBM + Balanced RandomForest model is not falsely predicting big loan_amt to not_default, but the ones similar to LGBM model.
+> While the LGBM + Balanced RandomForest model demonstrates greater overall tolerance, it maintains consistent accuracy with the LGBM model in identifying high-risk loans, particularly for larger loan amounts.
 
-#### 🏦 Final Decision 🏦
+### Model Recommendation and Justification
 
-Based on our analysis I would recommend ` LGBM + Balanced_RF` model for several reasons:
+Compared to the LGBM model, the LGBM + Balanced RandomForest model is recommended for implementation due to the following key factors:
 
-1. Application related features have higher importance in this model. Since Home Credit Group is mainly offering loans to people with little credit history, a model that uses less historical credit features would be more robust and create less bias across a mixed group of clients in which majority of them have little credit history.
+1. __Enhanced Feature Relevance__: The model places greater emphasis on application-related features, which aligns with Home Credit Group's primary demographic of clients with limited credit history. This characteristic reduces potential bias and improves model robustness across diverse client segments, particularly benefiting those without extensive credit records.
 
-2. Although the model identifies less loan_default, the ones it miss have no bigger loan amount than the ones missed by LGBM. This implies that unreasonably big loans or people with bad records are still captured (marked as default). 
+2. __Effective Risk Management__: While the model identifies 5% less loan defaults overall, its detection capability for high-risk loans remains comparable to the standard LGBM model. The consistency in identifying defaults for larger loan amounts demonstrates maintained effectiveness in risk assessment for significant financial exposures.
 
-3. The model is more tolerant, it successfully predicts almost 10% more loans to non-default, keeping in mind that 92% of applicants are non defaulters, this is a considerably big group of people. Based on this, banks can thus provide service to more people and earn interest from them.
+3. __Improved Business Opportunity__: The model exhibits superior performance in identifying non-default cases, with approximately 10% higher accuracy in this category. Given that 92% of applicants are non-defaulters, this improvement represents a significant opportunity for portfolio expansion while maintaining acceptable risk levels. This enables financial institutions to extend services to a broader client base while generating additional interest revenue.
 
-#### Model Deployment
+
+## Model Deployment
 
 LGBM + Balanced RandomForest Model is deployed to GCP, try it out on the `prediction_demo.ipynb` notebook.
 
